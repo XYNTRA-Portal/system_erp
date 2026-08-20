@@ -6,7 +6,7 @@ El sistema se manejara bajo una arquitectura modular monolita, sujeta a modifica
 
 El repositorio de momento solo cuenta con los archivos en su etapa de inicio con configuraciones basicas para el arranque, las cuales se modificaran una vez se inicie con el desarrollo de lleno.
 
-Ademas, el sistema pornto contara con las configuraciones necesarias para ejecutarse desde Docker.
+Ademas, el sistema pronto contara con las configuraciones necesarias para ejecutarse desde Docker.
 
 De momento aqui estaran las indicaciones para arracarlo desde un entorno seguro de desarrollo.
 
