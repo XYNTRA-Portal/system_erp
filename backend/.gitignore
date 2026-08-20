@@ -1,0 +1,35 @@
+# python
+__pycache__/
+*.py[cod]
+*.pyo
+
+.app/__pycache__/
+*.app/.py[cod]
+*.app/.pyo
+
+.app/core/__pycache__/
+
+# entorno vitual
+.venv/
+venv/
+env/
+
+# variables de entorno
+.env
+.app/.env
+
+# pruebas
+.pytest_cache/
+.coverage
+htmlcov/
+.app/.pytest_cache/
+.app/.coverage
+.app/htmlcov/
+
+# info de mi IDE
+.vscode/
+.idea/
+
+# sistema
+.DS_Store
+Thumbs.db
