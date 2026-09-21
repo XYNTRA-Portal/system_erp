@@ -12,7 +12,7 @@ class MovementType(str, Enum):
     OUT = "OUT"
     ADJUSTMENT = "ADJUSTMENT"
     TRANSFER_IN = "TRANSFER_IN"
-    TRANSFER_OUT = "TRANSDER_OUT"
+    TRANSFER_OUT = "TRANSFER_OUT"
 
 class Category(Base):
     __tablename__ = "categories"
