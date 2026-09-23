@@ -266,7 +266,7 @@ class Inventory(Base):
 
     warehouse = relationship(
         "Warehouse",
-        back_populates = "inventory",
+        back_populates = "inventories",
     )
 
     movements = relationship(

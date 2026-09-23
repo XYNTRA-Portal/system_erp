@@ -3,9 +3,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from modules.users.users_model import User
 from core.security import hash_password, verify_password
+from modules.users.users_schema import UserCreate, UpdateUser
 
-async def create_user(db: AsyncSession, data: dict) -> User:
-
+async def create_user(db: AsyncSession, data: UserCreate) -> User:
     user = User(
         company_id = data.company_id,
         first_name = data.first_name,
@@ -28,16 +28,14 @@ async def get_user_by_id(db: AsyncSession, user_id: UUID) -> User | None:
     
     return result.scalar_one_or_none()
 
-async def get_users_by_company(db: AsyncSession, company_id: str) -> list[User]:
-
+async def get_users_by_company(db: AsyncSession, company_id: UUID) -> list[User]:
     result = await db.execute(
         select(User).where(User.company_id == company_id)
     )
 
     return list(result.scalars().all())
 
-async def update_user(db: AsyncSession, data: User | None = None) -> User | None:
-
+async def update_user(db: AsyncSession, data: UpdateUser) -> User | None:
     user = await get_user_by_id(db, data.id)
 
     if not user: 
@@ -51,4 +49,17 @@ async def update_user(db: AsyncSession, data: User | None = None) -> User | None
     await db.commit()
     await db.refresh(user)
     
+    return user
+
+async def delete_user(db: AsyncSession, user_id: UUID) -> User:
+    user = await get_user_by_id(db, user_id)
+
+    if not user:
+        return None
+
+    user.is_active = False
+
+    await db.commit()
+    await db.refresh(user)
+
     return user

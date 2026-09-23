@@ -78,7 +78,7 @@ class User(Base):
         nullable = False,
     )
 
-    company = relationship(
+    companies = relationship(
         "Company",
         back_populates = "users",
     )
