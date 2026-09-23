@@ -62,7 +62,7 @@ class Company(Base):
 
     users = relationship(
         "User",
-        back_populates = "company",
+        back_populates = "companies",
         cascade = "all, delete-orphan",
     )
 
