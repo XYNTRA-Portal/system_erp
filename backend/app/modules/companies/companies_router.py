@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import AsyncSessionLocal
 from modules.companies.companies_schema import CreateCompanie, UpdateCompanie, CompanieResponse
-from modules.companies.companies_service import create_company, get_company_by_id, update_company
+from modules.companies.companies_service import create_company, get_company_by_id, update_company, delete_company
 
 router = APIRouter(
     prefix = "/companies",
@@ -33,7 +33,7 @@ async def edit_company(data: UpdateCompanie, db: AsyncSession = Depends(get_db))
 
 @router.delete("/delete_company", response_model = CompanieResponse)
 async def desactivate_company(id: UUID, db: AsyncSession = Depends(get_db)):
-    deleted_company = await deleted_company(db, id)
+    deleted_company = await delete_company(db, id)
     
     if not deleted_company:
         raise HTTPException(status_code = 404, detail = "Invalid ID")

@@ -24,7 +24,7 @@ async def get_company_by_id(db: AsyncSession, company_id: UUID) -> Company | Non
         select(Company).where(Company.id == company_id)
     )
 
-    return result
+    return result.scalar_one_or_none()
 
 async def update_company(db: AsyncSession, data: UpdateCompanie) -> Company | None:
     company = await get_company_by_id(db, data.id)
