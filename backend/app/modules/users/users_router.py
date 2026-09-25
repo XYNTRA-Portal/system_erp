@@ -17,15 +17,11 @@ async def get_db():
 
 @router.post("/add", response_model=UserResponse)
 async def add_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    created_user = await create_user(db, user)
-
-    return created_user
+    return await create_user(db, user)
 
 @router.get("/get_id", response_model = UserResponse)
 async def get_by_id(id: UUID, db: AsyncSession = Depends(get_db)):
-    get_user = await get_user_by_id(db, id)
-
-    return get_user
+    return await get_user_by_id(db, id)
 
 @router.get("/get_users", response_model = list[UserResponse])
 async def get_by_companies(company_id: UUID, db: AsyncSession = Depends(get_db)):
