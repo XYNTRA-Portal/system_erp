@@ -17,7 +17,6 @@ class UpdateUser(BaseModel):
     is_active: bool | None = None
 
 class UserResponse(BaseModel):
-    id: UUID
     company_id: UUID
     first_name: str
     last_name: str

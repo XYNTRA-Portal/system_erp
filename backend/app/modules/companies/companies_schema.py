@@ -17,7 +17,6 @@ class UpdateCompanie(BaseModel):
     phone: str | None = None
 
 class CompanieResponse(BaseModel):
-    id: UUID
     name: str
     legal_name: str
     tax_id: str

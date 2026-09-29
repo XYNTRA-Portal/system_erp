@@ -12,6 +12,5 @@ class UpdatedRole(BaseModel):
     decription: str | None = None
 
 class RoleResponse(BaseModel):
-    id: UUID
     name: str
     description: str
