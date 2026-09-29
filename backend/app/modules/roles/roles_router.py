@@ -19,15 +19,15 @@ async def get_db():
 async def add_role(role: CreateRole, db: AsyncSession = Depends(get_db)):
     return await create_role(role, db)
 
-@router.get("/get_id", response_model = RoleResponse)
+@router.get("/by_id", response_model = RoleResponse)
 async def get_role(id: UUID, db: AsyncSession = Depends(get_db)):
     return await get_role_by_id(db, id)
 
-@router.get("/get_by_company", response_model = list[RoleResponse])
+@router.get("/by_companies", response_model = list[RoleResponse])
 async def get_by_companies(company_id: UUID, db: AsyncSession = Depends(get_db)):
     return await get_roles_by_company(db, company_id)
 
-@router.put("/edit_role", response_model = RoleResponse)
+@router.put("/edit", response_model = RoleResponse)
 async def update_role(data: UpdatedRole, db: AsyncSession = Depends(get_db)):
     updated_role = await update_role(db, data)
 
