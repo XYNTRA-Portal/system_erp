@@ -1,13 +1,12 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Table, Column, func
+from sqlalchemy import DateTime, Boolean, ForeignKey, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from core.database import Base
-from modules.roles.roles_model import user_roles
 
-class User(Base):
-    __tablename__ = "users"
+class Warehouse(Base):
+    __tablename__ = "warehouses"
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid = True),
@@ -22,39 +21,33 @@ class User(Base):
         index = True,
     )
 
-    first_name: Mapped[str] = mapped_column(
+    name: Mapped[str] = mapped_column(
         String(100),
         nullable = False,
     )
 
-    last_name: Mapped[str] = mapped_column(
-        String(100),
+    code: Mapped[str] = mapped_column(
+        String(50),
         nullable = False,
     )
 
-    email: Mapped[str] = mapped_column(
-        String(150),
-        nullable = False,
-        index = True,
-    )
-
-    password: Mapped[str] = mapped_column(
-        String(255),
+    address: Mapped[str] = mapped_column(
+        Text,
         nullable = False,
     )
 
-    is_active: Mapped[bool] = mapped_column(
+    is_active: Mapped[Boolean] = mapped_column(
         Boolean,
-        default = True,
         nullable = False,
+        default = True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone = True),
-        server_default = func.now(),
-        nullable = False,
-    )
-
+            DateTime(timezone = True),
+            server_default = func.now(),
+            nullable = False,
+        )
+    
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone = True),
         server_default = func.now(),
@@ -62,18 +55,26 @@ class User(Base):
         nullable = False,
     )
 
-    companies = relationship(
+    company = relationship(
         "Company",
-        back_populates = "users",
+        back_populates = "warehouses"
     )
 
-    roles = relationship(
-        "Role",
-        secondary = user_roles,
-        back_populates = "users",
+    inventories = relationship(
+        "Inventory",
+        back_populates = "warehouse",
+        cascade = "all, delete-orphan",
     )
 
-    inventory_movements = relationship(
+    movements = relationship(
         "InventoryMovement",
-        back_populates = "created_by_user",
+        back_populates = "warehouse",
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "company_id",
+            "code",
+            name = "uq_warehouse_company_code",
+        ),
     )
