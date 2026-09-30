@@ -8,7 +8,7 @@ from modules.products.products_service import create_product, get_product_by_id,
 
 router = APIRouter(
     prefix = "/products",
-    tags = ["Prodcuts"]
+    tags = ["Products"]
 )
 
 async def get_db():
