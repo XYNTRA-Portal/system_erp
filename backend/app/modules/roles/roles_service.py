@@ -1,7 +1,7 @@
 from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from modules.users.users_model import Role
+from modules.roles.roles_model import Role
 from modules.roles.roles_schema import CreateRole, UpdatedRole, RoleResponse
 
 async def create_role(db: AsyncSession, data: CreateRole) -> Role:
