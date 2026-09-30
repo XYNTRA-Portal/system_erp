@@ -1,6 +1,6 @@
 import uuid
 from decimal import Decimal
-from sqlalchemy import CheckConstraint, ForeignKey, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, CheckConstraint, ForeignKey, Numeric, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from core.database import Base
@@ -53,6 +53,12 @@ class Product(Base):
         Numeric(12, 2),
         nullable = False,
         default = 0,
+    )
+
+    is_active: Mapped[Boolean] = mapped_column(
+        Boolean,
+        nullable = False,
+        default = True,
     )
 
     company = relationship(
