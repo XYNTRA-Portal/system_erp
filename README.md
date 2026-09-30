@@ -1,38 +1,75 @@
-# Sistema ERP
+# Sistema exportada
 
 Este es el repositorio principal para el sistema tipo ERP/CRM de BalamDev. En este repositorio se almacenan los archivos y ficheros iniciales para comenzar con el desarrollo del proyecto.
 
 El sistema se manejara bajo una arquitectura modular monolita, sujeta a modificaciones dependiendo las situaciones que se presenten.
 
-El repositorio de momento solo cuenta con los archivos en su etapa de inicio con configuraciones basicas para el arranque, las cuales se modificaran una vez se inicie con el desarrollo de lleno.
+El proyecto cuenta con la configuracion necesaria para ser montado usando Docker, cualquier cambio esta sujeto a revisiones y mejoras. A continuacion esta la ruta exacta de cada archivo.
 
-Ademas, el sistema pronto contara con las configuraciones necesarias para ejecutarse desde Docker.
+```cmd
+- ./backend/docker-compose.yml
+- ./backend/app/Dockerfile
+```
 
-De momento aqui estaran las indicaciones para arracarlo desde un entorno seguro de desarrollo.
+Ademas los archivos de requirements.txt y configuración de Alembic se encuentras en la ruta de:
 
-## Configuracion inicial
+```cmd
+- ./backend/app/...
+```
 
-Para inicializar el proyecto se necesita contar con las siguientes tecnologias instaladas:
+## Configuración inicial
 
-- Python 3.13.5 +
-- Node 22.7.0 +
+El contenedor de Docker, cuenta con tres imagenes principales:
 
-El siguiente paso es una vez clonando el repositorio de forma local:
+- Backend -> Contiene los archivos principales de la aplicacion en cuanto a funcionalidad y manejo de la información.
 
-- Ejecutar los siguientes comandos para inicializar y hacer la prueba con el endpoint de /health:
+- Postgress -> Arquitectura principal de la base de datos.
 
+- Redis -> Servicio a futuro para manejar todas las tareas asincronas. [no implementado aun]
+
+A continuacion, especificamos los comandos y configuracion de arranque para los servicios de *backend* y el cliente *frontend*.
+
+### Backend
+
+Ejecutar los siguientes comandos e instrucciones para inicializar el proyecto y montar el contenedor en Docker. 
+
+- Arrancar el entorno virtual de Python (en caso de requerirlo)
 ```cmd
 cd backend
 
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+```
+- Montar el contenedor de Docker, el cual debemos tener previamente instalado desde: https://docs.docker.com/desktop/setup/install/windows-install/
+```cmd
+cd backend
 
-cd app
-pip install -r requirements.txt
+docker compose up --d
+```
+- Ahora ya que tenemos montado el contenedor con las imagenes, solo faltara que iniciemos con el proceso de las migraciones. El cual consta de los siguientes comandos en orden.
+```cmd
+cd backend/app
 
-uvicorn main:app --reload
+alembic init migrations
+
+cd ..
+
+docker compose exec backend alembic revision --autogenerate -m "initial_schema"   
+(este comando genera de forma automatica la version inicial de la base de datos)
+
+docker compose exec backend alembic upgrade head   
+(con este comando bastara para montar la arquitectura de la BD en nuestra imagen de Docker, con las tablas correspondientes al proyecto)
+```
+- Los siguientes son algunos comandos utiles para evitar tener problemas con las migraciones y las versiones que llegemos a generar. Automaticamente Alembic estara revisando el estado de nuestra BD, pero es de gran utilidad revisarlo manualmente para evitar problemas mas grandes a futuro.
+```cmd
+docker compose exec backend alembic current   
+(revisa la version que tenemos montada en nuestro sistema de BD)
+
+docker compose exec postgres psql -U postgres -d "nombre de BD" -c "\dt"  
+(muestra el estado actual de la base de datos y los cambios recientes)
 ```
 
+### Frontend
 - Ejecutar los siguientes comandos para inicializar el cliente frontend del sistema:
 
 ```cmd
@@ -43,4 +80,12 @@ npm install
 npm start
 ```
 
-Con los comandos anteriormente ejecutados el proyecto quedara inicializado.
+### Consideraciones
+
+El proyecto se encuentra en etapa de desarrollo, sujeto a cualquier tipo de cambio en arquitectura, patrones de diseño y modelado de datos, por lo que se tomo la decision de usar herramientas como:
+
+- Docker: Para la virtualizacion y manejo de dependencias.
+
+- Alembic: Para las migraciones y configuracion ORM de la base de datos.
+
+- Arquitectura modular monolita: Sujeta a ser remplazada por una arquitectura por repositorios a futuro para mejorar el manejo de los datos o cualquier otra arquitectura/patron de diseño. Queda completamente abierto a la siguiente revisión.
