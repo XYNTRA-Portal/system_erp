@@ -1,28 +1,11 @@
 import uuid
-from sqlalchemy import ForeignKey, String, Table, Column
+from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from core.database import Base
 
-user_roles = Table(
-    "user_roles",
-    Base.metadata,
-    Column(
-        "user_id",
-        UUID(as_uuid = True),
-        ForeignKey("users.id", ondelete = "CASCADE"),
-        primary_key = True,
-    ),
-    Column(
-        "role_id",
-        UUID(as_uuid = True),
-        ForeignKey("roles.id", ondelete = "CASCADE"),
-        primary_key = True,
-    ),
-)
-
-class Role(Base):
-    __tablename__ = "roles"
+class Category(Base):
+    __tablename__ = "categories"
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid = True),
@@ -43,17 +26,22 @@ class Role(Base):
     )
 
     description: Mapped[str | None] = mapped_column(
-        String(255),
+        Text,
         nullable = False,
+    )
+
+    is_active: Mapped[Boolean] = mapped_column(
+        Boolean,
+        nullable = False,
+        default = True,
     )
 
     company = relationship(
         "Company",
-        back_populates = "roles",
+        back_populates = "categories",
     )
 
-    users = relationship(
-        "User",
-        secondary = user_roles,
-        back_populates = "roles",
+    products = relationship(
+        "Product",
+        back_populates = "category"
     )
