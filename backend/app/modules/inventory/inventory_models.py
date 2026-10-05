@@ -127,16 +127,6 @@ class InventoryMovement(Base):
         nullable = False,
     )
 
-    reference_type: Mapped[str | None] = mapped_column(
-        String(50),
-        nullable = True,
-    )
-
-    reference_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid = True),
-        nullable = True,
-    )
-
     description: Mapped[str | None] = mapped_column(
         Text,
         nullable = True,

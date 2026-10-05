@@ -20,7 +20,7 @@ async def add_category(category: CategoryCreate, db: AsyncSession = Depends(get_
     category_created = await create_category(db, category)
 
     if not category_created:
-        raise HTTPException(status_code = 404, detail = "Invalid data")
+        raise HTTPException(status_code = 400, detail = "Invalid data")
 
     return {"code": 201, "description": "Object added"}
 
