@@ -1,4 +1,4 @@
-# Sistema exportada
+# CRM/XYNTRA-BALAMDEV
 
 Este es el repositorio principal para el sistema tipo ERP/CRM de BalamDev. En este repositorio se almacenan los archivos y ficheros iniciales para comenzar con el desarrollo del proyecto.
 
