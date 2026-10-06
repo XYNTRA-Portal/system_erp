@@ -10,6 +10,10 @@ class Settings(BaseSettings):
 
     api_v1_prefix: str = "/api/v1"
 
+    secret_key: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+
     model_config = SettingsConfigDict(
         env_file = ".env.example",
         env_file_encoding = "utf-8",
