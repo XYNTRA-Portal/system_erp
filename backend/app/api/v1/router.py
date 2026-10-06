@@ -5,6 +5,7 @@ from modules.roles.roles_router import router as roles_router
 from modules.categories.categories_router import router as categories_router
 from modules.products.products_router import router as products_router
 from modules.warehouses.warehouses_router import router as warehouses_router
+from modules.inventory.inventory_router import router as inventory_router
 
 router = APIRouter()
 
@@ -14,7 +15,8 @@ routers = [
     roles_router,
     categories_router,
     products_router,
-    warehouses_router
+    warehouses_router,
+    inventory_router
 ]
 
 for r in routers:

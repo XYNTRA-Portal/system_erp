@@ -23,3 +23,19 @@ async def add_movement(inventory_movement: InventoryMovementCreate, db: AsyncSes
         raise HTTPException(status_code = 400, detail = "Invalid data")
 
     return {"code": 201, "description": "Object created"}
+
+@router.get("/by_id", response_model = InventoryMovementResponse)
+async def get_movement_by_id(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await get_by_id(db, id)
+
+@router.get("/by_product", response_model = list[InventoryMovementResponse])
+async def get_movements_by_product(product_id: UUID, db: AsyncSession = Depends(get_db)):
+    return await get_by_product(db, product_id)
+
+@router.get("/by_warehouse", response_model = list[InventoryMovementResponse])
+async def get_movements_by_warehouse(warehouse_id: UUID, db: AsyncSession = Depends(get_db)):
+    return await get_by_warehouse(db, warehouse_id)
+
+@router.get("/by_creator", response_model = list[InventoryMovementResponse])
+async def get_movements_by_creator(user_id: UUID, db: AsyncSession = Depends(get_db)):
+    return await get_by_creator(db, user_id)
