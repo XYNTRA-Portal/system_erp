@@ -70,14 +70,14 @@ docker compose exec postgres psql -U postgres -d "nombre de BD" -c "\dt"
 ```
 
 ### Frontend
-- Ejecutar los siguientes comandos para inicializar el cliente frontend del sistema:
+- El cliente frontend incluido en este repositorio esta desarrollado con Vite/React, basta con seguir las siguientes instrucciones para poder visualizarlo:
 
 ```cmd
 cd frontend
 
 npm install
 
-npm start
+npm run dev
 ```
 
 ### Consideraciones
