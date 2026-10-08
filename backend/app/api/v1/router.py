@@ -11,14 +11,14 @@ from modules.auth.auth_router import router as auth_router
 router = APIRouter()
 
 routers = [
+    auth_router,
     users_router,
     companies_router,
     roles_router,
     categories_router,
     products_router,
     warehouses_router,
-    inventory_router,
-    auth_router
+    inventory_router
 ]
 
 for r in routers:
