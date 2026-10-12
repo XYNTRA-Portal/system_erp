@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from datetime import datetime, timedelta, timezone
 from pwdlib import PasswordHash
 import jwt
@@ -29,8 +31,24 @@ def create_access_token(user_id: str) -> str:
     )
 
 def decode_access_token(token: str) -> dict:
-    return jwt.decode(
+    payload = jwt.decode(
         token,
         settings.secret_key,
         algorithms = [settings.algorithm],
+    )
+
+    if payload.get("type") != "access":
+        raise jwt.InvalidTokenError("Invalid token type")
+
+    return payload
+
+def create_refresh_token() -> str:
+    return secrets.token_urlsafe(64)
+
+def hash_refresh_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+def refresh_token_expiration() -> datetime:
+    return datetime.now(timezone.utc) + timedelta(
+        days = settings.refresh_token_expire_days
     )
