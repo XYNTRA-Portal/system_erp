@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import "boxicons/css/boxicons.min.css";
 
 const LoginForm = () => {
     const [data, setData] = useState({});
     const [showPassword, setShowPassword] = useState(false);
+    const { setAccessToken } = useAuth();
+    // const navigate = useNavigate();
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -16,10 +20,8 @@ const LoginForm = () => {
 
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}auth/login`, data)
-            console.log(response)
-            if (response){
-                alert("Inicio exitoso")
-            }
+            setAccessToken(response.data.access_token)
+            alert("Successful")
         } catch(err: any) {
             alert("Error")
         }
@@ -27,7 +29,7 @@ const LoginForm = () => {
 
     return (
         <div className="flex flex-col place-items-center w-120 h-auto p-16 rounded-[50px] bg-gray-900">
-            <h1 className="text-blue-500 text-3xl font-bold">BALAMDEV</h1>
+            <h1 className="text-blue-500 text-3xl font-bold">TEST CLIENT</h1>
             <form onSubmit={onSubmit} className="flex flex-col space-y-6 my-6 text-md">
                 <input onChange={onChange} type="email" id="email" name="email" placeholder="Email" className="bg-gray-800 text-gray-50 py-2 px-4 rounded-3xl w-80" />
                 <div className="relative w-80">

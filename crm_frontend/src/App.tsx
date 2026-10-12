@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './layouts/LoginPage'
+import HomePage from './layouts/HomePage'
 import './App.css'
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<LoginPage/>}></Route>
+          <Route path='/home' element={<HomePage/>}></Route>
         </Routes>
       </BrowserRouter>
     </>
