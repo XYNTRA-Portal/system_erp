@@ -42,4 +42,4 @@ async def login(db: AsyncSession, data: LoginRequest) -> str | None:
     if not verify_password(data.password, user.password):
         return None
 
-    return create_access_token(str(user.id))
+    return user
