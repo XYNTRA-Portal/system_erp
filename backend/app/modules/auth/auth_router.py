@@ -5,7 +5,7 @@ from core.config import settings
 from core.database import AsyncSessionLocal
 from modules.auth.auth_schema import LoginRequest, TokenResponse
 from modules.auth.auth_service import login, get_current_user
-from modules.auth.refresh_session_service import create_refresh_session, rotate_refresh_session
+from modules.auth.refresh_session_service import create_refresh_session, rotate_refresh_session, revoke_refresh_session_by_token
 from core.security import create_access_token
 from modules.users.users_schema import UserResponse
 
@@ -89,3 +89,26 @@ async def refresh_access_token(request: Request, response: Response, db: AsyncSe
     )
 
     return { "access_token": access_token, "token_type": "bearer" }
+
+@router.post("/logout", status_code = status.HTTP_204_NO_CONTENT)
+async def logout(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    cookie_name = (
+        "refresh_token"
+        if settings.app_env == "development"
+        else "__Host-refresh_token"
+    )
+
+    refresh_token = request.cookies.get(cookie_name)
+
+    if refresh_token:
+        await revoke_refresh_session_by_token(db, refresh_token)
+
+    response.delete_cookie(
+        key = cookie_name,
+        path = "/",
+        secure = settings.cookie_secure,
+        httponly = True,
+        samesite = settings.cookie_samesite,
+    )
+
+    response.status_code = status.HTTP_204_NO_CONTENT

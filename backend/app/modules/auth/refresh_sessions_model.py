@@ -21,6 +21,13 @@ class RefreshSession(Base):
         index = True,
     )
 
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid = True),
+        default = uuid.uuid4,
+        nullable = False,
+        index = True
+    )
+
     token_hash: Mapped[str] = mapped_column(
         String(64),
         nullable = False,
