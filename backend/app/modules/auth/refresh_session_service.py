@@ -32,6 +32,37 @@ async def get_valid_refresh_session(db: AsyncSession, token: str,) -> RefreshSes
 
     return result.scalar_one_or_none()
 
-async def revoke_refresh_session(db: AsyncSession, session: RefreshSession,) -> None:
+async def revoke_refresh_session(db: AsyncSession, session: RefreshSession) -> None:
     session.revoked_at = datetime.now(timezone.utc)
     await db.commit()
+
+async def rotate_refresh_session(db: AsyncSession, token: str) -> tuple[UUID, str] | None:
+    token_hash = hash_refresh_token(token)
+
+    result = await db.execute(
+        select(RefreshSession).where(
+            RefreshSession.token_hash == token_hash,
+            RefreshSession.revoked_at.is_(None),
+            RefreshSession.expires_at > datetime.now(timezone.utc),
+        ).with_for_update()
+    )
+
+    current_session = result.scalar_one_or_none()
+
+    if not current_session:
+        return None
+
+    current_session.revoked_at = datetime.now(timezone.utc)
+
+    new_token = create_refresh_token()
+
+    new_session = RefreshSession(
+        user_id = current_session.user_id,
+        token_hash = hash_refresh_token(new_token),
+        expires_at = refresh_token_expiration(),
+    )
+
+    db.add(new_session)
+    await db.commit()
+
+    return current_session.user_id, new_token
