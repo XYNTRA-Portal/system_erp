@@ -1,6 +1,11 @@
+import Header from "../components/Header";
+
+
 const HomePage = () => {
     return(
-        <h1 className="text-blue-800 animate-bounce">HOME PAGE</h1>
+        <main className="min-h-screen w-full m-0 overflow-x-hidden bg-white">
+            <div className="bg-gray-900 text-white">hola</div>
+        </main>
     )
 }
 
