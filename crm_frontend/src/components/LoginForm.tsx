@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import "boxicons/css/boxicons.min.css";
@@ -8,7 +8,7 @@ const LoginForm = () => {
     const [data, setData] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const { setAccessToken } = useAuth();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ const LoginForm = () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}auth/login`, data)
             setAccessToken(response.data.access_token)
-            alert("Successful")
+            navigate("/home")
         } catch(err: any) {
             alert("Error")
         }
