@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { UsersService } from '../services/users.service';
 import type { User } from '../types/user.types';
+import { useAuth } from '../context/AuthContext';
 
 interface UserPageProps {
     companyId: string;
 }
 
-const UsersPage = ({ companyId }: UserPageProps) => {
+const UsersPage = () => {
+    const { companyId, authReady } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -17,11 +19,20 @@ const UsersPage = ({ companyId }: UserPageProps) => {
         let cancelled = false;
 
         const loadUsers = async () => {
+            if (!authReady) return;
+
+            if (!companyId) {
+                setUsers([]);
+                setLoading(false);
+                setError("There is not a company.. .(");
+                return;
+            }
+
             setLoading(true);
             setError(null);
 
             try {
-                const data = await UsersService.getByCompany(companyId);
+                const data = await UsersService.getByCompany();
 
                 if (!cancelled) {
                     setUsers(data);
@@ -43,7 +54,7 @@ const UsersPage = ({ companyId }: UserPageProps) => {
             cancelled = true;
         };
 
-    }, [companyId]);
+    }, [companyId, authReady]);
 
     const handleDesactivate = async (user: User) => {
         if (!window.confirm(`¿You wanna remove the user ${user.first_name} ${user.last_name}?`)) {

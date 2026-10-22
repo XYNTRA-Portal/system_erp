@@ -10,11 +10,9 @@ export const UsersService = {
 
         return response.data;
     },
-    async getByCompany(companyId: string): Promise<User[]> {
+    async getByCompany(): Promise<User[]> {
 
-        const response = await api.get<User[]>("users/by_companies", {
-            params: { company_id: companyId }
-        });
+        const response = await api.get<User[]>("users/by_companies");
 
         return response.data;
     },

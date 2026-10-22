@@ -16,7 +16,7 @@ export default function HomePage() {
         Inventory: <InventoriesPage />,
         Categories: <CategoriesPage />,
         Warehouses: <WarehousesPage />,
-        Users: <UsersPage companyId={"7f3c2a91-6b84-4d17-9e53-2a8f1c7b4d60"}/>,
+        Users: <UsersPage />,
         Roles: <RolesPage />
     };
 
