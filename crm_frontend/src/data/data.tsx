@@ -6,16 +6,8 @@ import {
     ShieldCheck,
     Users,
     Warehouse,
+    type LucideIcon,
 } from "lucide-react";
-
-export const navigation = [
-    { label: "Dashboard", icon: LayoutDashboard },
-    { label: "Inventory", icon: Package },
-    { label: "Categories", icon: Boxes },
-    { label: "Warehouses", icon: Warehouse },
-    { label: "Users", icon: Users },
-    { label: "Roles", icon: ShieldCheck },
-];
 
 export const movements = [
     { day: "Mon", value: 42 },
