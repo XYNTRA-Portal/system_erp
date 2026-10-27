@@ -15,7 +15,7 @@ async def get_db():
     async with AsyncSessionLocal() as db:
         yield db
 
-@router.post("/add", response_model = CompanieResponse)
+@router.post("/add", response_model = ResponseMessage)
 async def add_user(company: CreateCompanie, db: AsyncSession = Depends(get_db)):
     company_created = await create_company(db, company)
 
