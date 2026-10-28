@@ -1,19 +1,17 @@
+import CreateUSerModal from '../components/CreateUserModal';
+import { UsersService } from '../services/users.service';
+import { useAuth } from '../context/AuthContext';
+import type { User } from '../types/user.types';
 import { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { UsersService } from '../services/users.service';
-import type { User } from '../types/user.types';
-import { useAuth } from '../context/AuthContext';
-
-interface UserPageProps {
-    companyId: string;
-}
 
 const UsersPage = () => {
-    const { companyId, authReady } = useAuth();
+    const [deactivatingId, setDeactivatingId] = useState<string | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false)
+    const [error, setError] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [deactivatingId, setDeactivatingId] = useState<string | null>(null);
+    const { companyId, authReady } = useAuth();
 
     useEffect(() => {
         let cancelled = false;
@@ -68,7 +66,7 @@ const UsersPage = () => {
             await UsersService.deactivate(user.id);
 
             setUsers((current) => current.map((item) =>
-                item.id === user.id ? { ...item, is_activate: false } : item
+                item.id === user.id ? { ...item, is_active: false } : item
             ));
         } catch {
             setError("It's not possible remove the user.. :(");
@@ -77,6 +75,18 @@ const UsersPage = () => {
         }
     };
 
+    const fetchUsers = async () => {
+        setError(null);
+
+        try {
+            const data = await UsersService.getByCompany();
+            setUsers(data);
+        } catch {
+            setError("It's not possible to load the users..");
+            throw new Error("Failed to refresh users");
+        }
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -84,7 +94,7 @@ const UsersPage = () => {
                     <h2 className="text-xl font-bold text-white">Users Module</h2>
                     <p className="text-xs text-slate-400">Users with access management</p>
                 </div>
-                <button className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center space-x-2 cursor-pointer">
+                <button onClick={() => { setIsModalVisible(true) }} className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center space-x-2 cursor-pointer">
                     <Plus className="w-4 h-4" />
                     <span>New User</span>
                 </button>
@@ -178,6 +188,9 @@ const UsersPage = () => {
                     </table>
                 </div>
             </div>
+            {isModalVisible && (
+                <CreateUSerModal setIsModalVisible={setIsModalVisible} onUserCreated={fetchUsers} />
+            )}
         </div>
     )
 }

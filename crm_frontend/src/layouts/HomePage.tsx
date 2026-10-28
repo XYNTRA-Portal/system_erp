@@ -1,13 +1,15 @@
-import { Bell, ChevronDown, CircleHelp, Command, LogOut, Settings2, X, Zap, Boxes, LayoutDashboard, Package, ShieldCheck, Warehouse, type LucideIcon, Users } from "lucide-react";
-import { useState } from "react";
-import "boxicons/css/boxicons.min.css";
+import { Bell, ChevronDown, CircleHelp, LogOut, Settings2, X, Zap, Boxes, LayoutDashboard, Package, ShieldCheck, Warehouse, type LucideIcon, Users } from "lucide-react";
 import { LoginBackground } from "../components/LoginBackground";
-import DashboardPage from "../pages/DashboardPage";
-import CategoriesPage from "../pages/CategoriesPage";
 import InventoriesPage from "../pages/InventoriesPage";
+import WarehousesPage from "../pages/WarehousesPage";
+import CategoriesPage from "../pages/CategoriesPage";
+import DashboardPage from "../pages/DashboardPage";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import RolesPage from "../pages/RolesPage";
 import UsersPage from "../pages/UsersPage";
-import WarehousesPage from "../pages/WarehousesPage";
+import "boxicons/css/boxicons.min.css";
+import { useState } from "react";
 
 export default function HomePage() {
 
@@ -31,15 +33,78 @@ export default function HomePage() {
         { label: "Roles", icon: ShieldCheck },
     ] satisfies { label: PageKey; icon: LucideIcon }[];
 
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
     const [activePage, setActivePage] = useState<PageKey>("Dashboard");
     const [showNotifications, setShowNotifications] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [exportMessage, setExportMessage] = useState("");
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-[#090d14] text-slate-300 selection:bg-blue-500/30">
             <div className="flex min-h-screen">
+
+                {mobileMenuOpen && (
+                    <div
+                        className="fixed inset-0 z-50 lg:hidden"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+                        <aside
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute inset-y-0 left-0 flex w-64 flex-col border-r border-white/[0.07] bg-[#0c111a] shadow-2xl"
+                        >
+                            <div className="flex h-19 items-center justify-between border-b border-white/[0.07] px-5">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white">
+                                        <Zap size={21} fill="currentColor" />
+                                    </div>
+                                    <p className="text-[17px] font-bold text-white">
+                                        Test Client<span className="text-blue-400">.</span>
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="text-slate-400 hover:text-white"
+                                    aria-label="Cerrar menú"
+                                >
+                                    <i className="bx bx-x text-2xl" />
+                                </button>
+                            </div>
+
+                            <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-7">
+                                {navigation.map((item) => {
+                                    const Icon = item.icon;
+                                    const active = activePage === item.label;
+
+                                    return (
+                                        <button
+                                            key={item.label}
+                                            onClick={() => {
+                                                setActivePage(item.label);
+                                                setMobileMenuOpen(false);
+                                            }}
+                                            className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] transition ${active
+                                                ? "border border-blue-400/15 bg-blue-500/12 font-medium text-blue-300"
+                                                : "border border-transparent text-slate-500 hover:bg-white/4 hover:text-slate-200"
+                                                }`}
+                                        >
+                                            <Icon size={18} />
+                                            <span>{item.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </nav>
+                        </aside>
+                    </div>
+                )}
+
                 <aside
                     className={`relative hidden shrink-0 flex-col border-r border-white/[0.07] bg-[#0c111a] transition-all duration-300 lg:flex ${sidebarCollapsed ? "w-19" : "w-62"
                         }`}
@@ -140,18 +205,28 @@ export default function HomePage() {
                 </aside>
 
                 <main className="min-w-0 flex-1">
+
                     <LoginBackground />
+
                     <header className="sticky top-0 z-20 flex h-19 items-center justify-between gap-4 border-b border-white/[0.07] bg-[#090d14]/90 px-4 backdrop-blur-xl sm:px-7 xl:px-10">
+
                         <div className="flex min-w-0 items-center gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/3 text-slate-400 lg:hidden">
-                                <Command size={18} />
-                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#0c111a] text-slate-300 transition hover:border-blue-400/30 hover:bg-blue-500/10 hover:text-blue-300 lg:hidden"
+                                aria-label="Abrir menú"
+                            >
+                                <i className="bx bx-menu text-2xl" />
+                            </button>
+
                             <div className="min-w-0">
                                 <div className="flex items-center gap-2 text-[11px] text-slate-600">
                                     <span>Workspace</span>
                                     <span>/</span>
-                                    <span className="text-slate-400">{activePage}</span>
+                                    <span className="truncate text-slate-400">{activePage}</span>
                                 </div>
+
                                 <p className="mt-1 truncate text-sm font-semibold text-white">
                                     {activePage === "Dashboard"
                                         ? "Overview"
@@ -159,6 +234,7 @@ export default function HomePage() {
                                 </p>
                             </div>
                         </div>
+
 
                         <div className="flex items-center gap-2 sm:gap-4">
                             {/* <div className="relative hidden md:block">
@@ -237,9 +313,12 @@ export default function HomePage() {
                                             Signed in as TC
                                         </p>
                                         <button
-                                            onClick={() => {
-                                                setShowProfile(false);
-                                                setExportMessage("Connect your logout handler here");
+                                            onClick={async () => {
+                                                try {
+                                                    await logout();
+                                                } finally {
+                                                    navigate("/", { replace: true });
+                                                }
                                             }}
                                             className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-xs text-slate-300 hover:bg-white/5"
                                         >
