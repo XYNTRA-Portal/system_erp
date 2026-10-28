@@ -4,13 +4,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import AsyncSessionLocal
 from core.schemas import ResponseMessage
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from modules.users.users_schema import UserCreate, UserResponse, UpdateUser
 from modules.users.users_service import create_user, get_user_by_id, get_users_by_company, update_user, delete_user
+from modules.auth.auth_router import get_current_user
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
 )
+
+security = HTTPBearer()
 
 async def get_db():
     async with AsyncSessionLocal() as db:
@@ -48,5 +52,11 @@ async def get_by_id(id: UUID, db: AsyncSession = Depends(get_db)):
     return await get_user_by_id(db, id)
 
 @router.get("/by_companies", response_model = list[UserResponse])
-async def get_by_companies(company_id: UUID, db: AsyncSession = Depends(get_db)):
-    return await get_users_by_company(db, company_id)
+async def get_by_companies(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)):
+
+    current_user = await get_current_user(db, credentials.credentials)
+
+    if not current_user:
+        raise HTTPException( status_code = 401, detail = "Invalid or expired token" )
+
+    return await get_users_by_company(db, current_user.company_id)
