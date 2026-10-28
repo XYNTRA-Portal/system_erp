@@ -6,14 +6,24 @@ interface TokenResponse {
     token_type: string;
 }
 
+let refreshPromise: Promise<TokenResponse> | null = null;
+
 export const authService = {
     async me(): Promise<User> {
         const response = await api.get<User>("auth/me");
         return response.data;
     },
     async refresh(): Promise<TokenResponse> {
-        const response = await api.post<TokenResponse>("auth/refresh");
-        return response.data;
+        if (!refreshPromise) {
+            refreshPromise = api
+                .post<TokenResponse>("auth/refresh")
+                .then((response) => response.data)
+                .finally(() => {
+                    refreshPromise = null;
+                });
+        }
+
+        return refreshPromise;
     },
     async logout(): Promise<void> {
         await api.post("auth/logout");

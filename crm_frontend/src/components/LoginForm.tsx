@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { api } from "../api/axios";
 import "boxicons/css/boxicons.min.css";
 
 const LoginForm = () => {
@@ -19,7 +20,7 @@ const LoginForm = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}auth/login`, data)
+            const response = await api.post("auth/login", data)
             setAccessToken(response.data.access_token)
             navigate("/home")
         } catch(err: any) {
