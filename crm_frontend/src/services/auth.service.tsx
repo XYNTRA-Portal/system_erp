@@ -1,6 +1,11 @@
 import { api } from "../api/axios";
 import type { User } from "../types/user.types";
 
+interface LoginRequest {
+    email: string;
+    password: string;
+}
+
 interface TokenResponse {
     access_token: string;
     token_type: string;
@@ -9,6 +14,10 @@ interface TokenResponse {
 let refreshPromise: Promise<TokenResponse> | null = null;
 
 export const authService = {
+    async login(data: LoginRequest): Promise<TokenResponse> {
+        const response = await api.post<TokenResponse>("auth/login", data);
+        return response.data;
+    },
     async me(): Promise<User> {
         const response = await api.get<User>("auth/me");
         return response.data;
@@ -22,7 +31,6 @@ export const authService = {
                     refreshPromise = null;
                 });
         }
-
         return refreshPromise;
     },
     async logout(): Promise<void> {

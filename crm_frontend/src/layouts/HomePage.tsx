@@ -219,11 +219,11 @@ export default function HomePage() {
                                     className="flex items-center gap-2.5 rounded-lg text-left"
                                 >
                                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-400 to-indigo-600 text-xs font-bold text-white">
-                                        AM
+                                        TC
                                     </div>
                                     <div className="hidden sm:block">
                                         <p className="text-xs font-semibold text-slate-200">
-                                            Alex Morgan
+                                            TEST CLIENT
                                         </p>
                                         <p className="mt-0.5 text-[10px] text-slate-500">
                                             Administrator
@@ -234,7 +234,7 @@ export default function HomePage() {
                                 {showProfile && (
                                     <div className="absolute right-0 top-12 z-30 w-48 rounded-xl border border-white/10 bg-[#141b27] p-2 shadow-2xl">
                                         <p className="px-3 py-2 text-xs text-slate-400">
-                                            Signed in as Alex
+                                            Signed in as TC
                                         </p>
                                         <button
                                             onClick={() => {
