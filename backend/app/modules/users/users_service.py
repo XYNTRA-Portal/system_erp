@@ -44,6 +44,7 @@ async def update_user(db: AsyncSession, data: UpdateUser) -> User | None:
     if data.first_name is not None: user.first_name = data.first_name
     if data.last_name is not None: user.last_name = data.last_name
     if data.email is not None: user.email = data.email
+    if data.is_active is not None: user.is_active = data.is_active
     if data.password is not None: user.password = hash_password(data.password)
 
     await db.commit()
@@ -51,7 +52,7 @@ async def update_user(db: AsyncSession, data: UpdateUser) -> User | None:
     
     return user
 
-async def delete_user(db: AsyncSession, user_id: UUID) -> User:
+async def delete_user(db: AsyncSession, user_id: UUID) -> User | None:
     user = await get_user_by_id(db, user_id)
 
     if not user:
