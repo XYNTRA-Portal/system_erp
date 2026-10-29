@@ -9,8 +9,12 @@ class CreateRole(BaseModel):
 class UpdatedRole(BaseModel):
     id: UUID
     name: str | None = None
-    decription: str | None = None
+    description: str | None = None
 
 class RoleResponse(BaseModel):
+    id: UUID
+    company_id: UUID
     name: str
     description: str
+
+    model_config = ConfigDict(from_attributes = True)
