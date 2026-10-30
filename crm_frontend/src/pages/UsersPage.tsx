@@ -1,13 +1,20 @@
 import CreateUSerModal from '../components/CreateUserModal';
+import EditUserModal from '../components/EditUserModal';
 import { UsersService } from '../services/users.service';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/user.types';
 import { useEffect, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Pencil, ShieldCheck } from 'lucide-react';
+import { RoleService } from '../services/roles.service';
+import type { Role } from '../types/role.types';
+import ManageUserRolesModal from '../components/ManageUserRolesModal';
 
 const UsersPage = () => {
     const [deactivatingId, setDeactivatingId] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false)
+    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [rolesByUser, setRolesByUser] = useState<Record<string, Role[]>>({});
+    const [rolesModalUser, setRolesModalUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -53,6 +60,38 @@ const UsersPage = () => {
         };
 
     }, [companyId, authReady]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadUserRoles = async () => {
+            if (!authReady || users.length === 0) {
+                setRolesByUser({});
+                return;
+            }
+
+            const entries = await Promise.all(
+                users.map(async (user) => {
+                    try {
+                        const roles = await RoleService.getByUser(user.id);
+                        return [user.id, roles] as const;
+                    } catch {
+                        return [user.id, [] as Role[]] as const;
+                    }
+                })
+            );
+
+            if (!cancelled) {
+                setRolesByUser(Object.fromEntries(entries));
+            }
+        };
+
+        void loadUserRoles();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [users, authReady]);
 
     const handleDesactivate = async (user: User) => {
         if (!window.confirm(`¿You wanna remove the user ${user.first_name} ${user.last_name}?`)) {
@@ -150,9 +189,17 @@ const UsersPage = () => {
                                         </td>
 
                                         <td className="p-4">
-                                            <span className="px-2.5 py-1 bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded-lg text-xs font-medium">
-                                                Sistema
-                                            </span>
+                                            <div className='flex flex-wrap gap-1.5'>
+                                                {(rolesByUser[user.id] ?? []).length > 0 ? (
+                                                    rolesByUser[user.id].map((role) => (
+                                                        <span key={role.id} className='px-2.5 py-1 bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded-lg text-xs font-medium'>
+                                                            {role.name}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-xs text-slate-500">No Roles</span>
+                                                )}
+                                            </div>
                                         </td>
 
                                         <td className="p-4 text-xs text-slate-400">
@@ -173,6 +220,22 @@ const UsersPage = () => {
                                         <td className="p-4 text-right">
                                             <button
                                                 type="button"
+                                                title="Administrar roles"
+                                                onClick={() => setRolesModalUser(user)}
+                                                className="p-1.5 text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer"
+                                            >
+                                                <ShieldCheck className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                type='button'
+                                                title='Edit User'
+                                                onClick={() => setEditingUser(user)}
+                                                className='p-1.5 text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer'
+                                            >
+                                                <Pencil className='w-4 h-4' />
+                                            </button>
+                                            <button
+                                                type="button"
                                                 title="Desactivar usuario"
                                                 disabled={!user.is_active || deactivatingId === user.id}
                                                 onClick={() => void handleDesactivate(user)}
@@ -190,6 +253,19 @@ const UsersPage = () => {
             </div>
             {isModalVisible && (
                 <CreateUSerModal setIsModalVisible={setIsModalVisible} onUserCreated={fetchUsers} />
+            )}
+            {editingUser && (
+                <EditUserModal user={editingUser} onClose={() => setEditingUser(null)} onUserUpdated={fetchUsers} />
+            )}
+            {rolesModalUser && (
+                <ManageUserRolesModal 
+                    user={rolesModalUser} 
+                    onClose={() => setRolesModalUser(null)} 
+                    onRolesChanged={async () => { 
+                        const data = await UsersService.getByCompany(); 
+                        setUsers(data); 
+                    }} 
+                />
             )}
         </div>
     )
