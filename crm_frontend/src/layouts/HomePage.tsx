@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, CircleHelp, LogOut, Settings2, X, Zap, Boxes, LayoutDashboard, Package, ShieldCheck, Warehouse, type LucideIcon, Users } from "lucide-react";
+import { Bell, ChevronDown, CircleHelp, LogOut, Settings2, X, Zap, Boxes, LayoutDashboard, Package, Warehouse, type LucideIcon, Users } from "lucide-react";
 import { LoginBackground } from "../components/LoginBackground";
 import InventoriesPage from "../pages/InventoriesPage";
 import WarehousesPage from "../pages/WarehousesPage";
