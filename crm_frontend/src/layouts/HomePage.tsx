@@ -6,7 +6,6 @@ import CategoriesPage from "../pages/CategoriesPage";
 import DashboardPage from "../pages/DashboardPage";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import RolesPage from "../pages/RolesPage";
 import UsersPage from "../pages/UsersPage";
 import "boxicons/css/boxicons.min.css";
 import { useState } from "react";
@@ -18,8 +17,7 @@ export default function HomePage() {
         Inventory: <InventoriesPage />,
         Categories: <CategoriesPage />,
         Warehouses: <WarehousesPage />,
-        Users: <UsersPage />,
-        Roles: <RolesPage />
+        Users: <UsersPage />
     };
 
     type PageKey = keyof typeof pages;
@@ -30,7 +28,6 @@ export default function HomePage() {
         { label: "Categories", icon: Boxes },
         { label: "Warehouses", icon: Warehouse },
         { label: "Users", icon: Users },
-        { label: "Roles", icon: ShieldCheck },
     ] satisfies { label: PageKey; icon: LucideIcon }[];
 
     const { logout } = useAuth();
