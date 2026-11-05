@@ -41,6 +41,7 @@ async def update_warehouse(db: AsyncSession, data: UpdateWarehouse) -> Warehouse
     if data.name is not None: warehouse.name = data.name
     if data.code is not None: warehouse.code = data.code
     if data.address is not None: warehouse.address = data.address
+    if data.is_active is not None: warehouse.is_active = data.is_active
 
     await db.commit()
     await db.refresh(warehouse)

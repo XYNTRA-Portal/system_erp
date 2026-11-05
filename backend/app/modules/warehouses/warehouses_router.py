@@ -1,16 +1,20 @@
 from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import AsyncSessionLocal
 from core.schemas import ResponseMessage
 from modules.warehouses.warehouses_schema import WarehouseCreate, WarehouseResponse, UpdateWarehouse
 from modules.warehouses.warehouses_service import create_warehouse, get_warehouse_by_id, get_warehouse_by_companies, update_warehouse, delete_warehouse
+from modules.auth.auth_router import get_current_user
 
 router = APIRouter(
     prefix = "/warehouses",
     tags = ["Warehouses"]
 )
+
+security = HTTPBearer()
 
 async def get_db():
     async with AsyncSessionLocal() as db:
@@ -48,5 +52,10 @@ async def get_by_id(id: UUID, db: AsyncSession = Depends(get_db)):
     return await get_warehouse_by_id(db, id)
 
 @router.get("/by_company", response_model = list[WarehouseResponse])
-async def get_by_companies(company_id: UUID, db: AsyncSession = Depends(get_db)):
-    return await get_warehouse_by_companies(db, company_id)
+async def get_by_companies(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)):
+    current_user = await get_current_user(db, credentials.credentials)
+
+    if not current_user:
+        raise HTTPException( status_code = 401, detail = "Invalid or expired token" )
+    
+    return await get_warehouse_by_companies(db, current_user.company_id)

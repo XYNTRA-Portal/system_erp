@@ -1,0 +1,115 @@
+import { useState, type FormEvent } from "react";
+import { Warehouse, X, Save, Road, QrCode } from "lucide-react";
+import { WarehousesService } from "../services/warehouses.service";
+import type { Warehouse as WarehouseType, WarehouseUpdate } from "../types/warehouse.type";
+
+interface EditWarehouseModalProps {
+    warehouse: WarehouseType;
+    onClose: () => void;
+    onWarehouseUpdated: () => Promise<void>;
+}
+
+const inputClass = "w-full px-3 py-2.5 bg-slate-950/60 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20";
+
+const EditWarehouseModal = ({ warehouse, onClose, onWarehouseUpdated }: EditWarehouseModalProps) => {
+    const [name, setName] = useState(warehouse.name);
+    const [address, setAdress] = useState(warehouse.address);
+    const [code, setCode] = useState(warehouse.code);
+    const [isActive, setIsActive] = useState(warehouse.is_active);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setLoading(true);
+
+        const data: WarehouseUpdate = {
+            id: warehouse.id,
+            name: name.trim(),
+            address: address.trim(),
+            code: code.trim(),
+            is_active: isActive,
+        }
+
+        try {
+            await WarehousesService.update(data);
+            await onWarehouseUpdated();
+            onClose();
+        } catch {
+            setError("It's not possible update data..")
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div className="w-full max-w-lg overflow-hidden bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl">
+                <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xl font-bold text-white">Edit user</h3>
+                        <p className="text-xs text-slate-400 mt-1">
+                            Update data and account status.
+                        </p>
+                    </div>
+                    <button type="button" onClick={onClose} aria-label="Cerrar modal"
+                        className="p-2 text-slate-400 hover:text-white cursor-pointer rounded-full">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {error && <p role="alert" className="text-sm text-red-400 px-6 pt-4">{error}</p>}
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <label className="block space-y-1.5">
+                        <span className="text-xs font-medium text-slate-300">Name</span>
+                        <span className="relative block">
+                            <Warehouse className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                            <input className={`${inputClass} pl-9`} value={name}
+                                onChange={(e) => setName(e.target.value)} required />
+                        </span>
+                    </label>
+
+                    <label className="block space-y-1.5">
+                        <span className="text-xs font-medium text-slate-300">Code</span>
+                        <span className="relative block">
+                            <QrCode className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                            <input className={`${inputClass} pl-9`} type="text" value={code}
+                                onChange={(e) => setCode(e.target.value)} required />
+                        </span>
+                    </label>
+
+                    <label className="block space-y-1.5">
+                        <span className="text-xs font-medium text-slate-300">Address</span>
+                        <span className="relative block">
+                            <Road className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                            <input className={`${inputClass} pl-9`} type="text" value={address}
+                                onChange={(e) => setAdress(e.target.value)} required />
+                        </span>
+                    </label>
+
+                    <label className="flex items-center gap-3 rounded-xl border border-slate-800 p-3">
+                        <input type="checkbox" checked={isActive}
+                            onChange={(e) => setIsActive(e.target.checked)}
+                            className="accent-indigo-500" />
+                        <span className="text-sm text-slate-200">Active user</span>
+                    </label>
+
+                    <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+                        <button type="button" onClick={onClose}
+                            className="px-4 py-2.5 text-sm text-slate-300 bg-slate-800 rounded-xl cursor-pointer hover:bg-slate-700 duration-300">
+                            Cancel
+                        </button>
+                        <button type="submit" disabled={loading}
+                            className="cursor-pointer px-5 py-2.5 text-sm text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl disabled:opacity-50 flex items-center gap-2">
+                            <Save className="w-4 h-4" />
+                            {loading ? "Saving..." : "Save data"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
+export default EditWarehouseModal;
