@@ -22,8 +22,8 @@ export const WarehousesService = {
 
         return response.data;
     },
-    async deactivate(id: string): Promise<ResponseMessage> {
-        const response = await api.delete<ResponseMessage>("warehouses/desactivate", { params: { id } });
+    async deactivate(warehouse_id: string): Promise<ResponseMessage> {
+        const response = await api.delete<ResponseMessage>("warehouses/desactivate", { params: { warehouse_id } });
 
         return response.data;
     }

@@ -8,7 +8,7 @@ export interface Warehouse {
 }
 
 export interface WarehouseCreate {
-    company_id: string;
+    company_id: string | null;
     name: string;
     code: string;
     address: string;

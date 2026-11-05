@@ -41,7 +41,7 @@ const EditUserModal = ({ user, onClose, onUserUpdated }: EditUserModalProps) => 
             await onUserUpdated();
             onClose();
         } catch {
-            setError("No fue posible actualizar el usuario. Verifica los datos y tus permisos.");
+            setError("It's not possible update data..");
         } finally {
             setLoading(false);
         }

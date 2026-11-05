@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import type { Warehouse } from "../types/warehouse.type";
 import { WarehousesService } from "../services/warehouses.service";
 import { Plus, Trash2, Pencil } from "lucide-react";
+import EditWarehouseModal from "../components/EditWarehouseModal";
+import CreateWarehouseModal from "../components/CreateWarehouseModal";
 
 const WarehousesPage = () => {
-    const [addingUser, setAddingUser] = useState<string | null>(null);
-    const [editingUser, setEditingUser] = useState<Warehouse | null>(null);
+    const [addingWarehouse, setAddingWarehouse] = useState<boolean>(false);
+    const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(null);
     const [deactivatingId, setDeactivatingId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -93,7 +95,7 @@ const WarehousesPage = () => {
                     <h2 className="text-xl font-bold text-white">Warehouses Module</h2>
                     <p className="text-xs text-slate-400">Registered warehouses by the company</p>
                 </div>
-                <button className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center space-x-2 cursor-pointer">
+                <button onClick={() => setAddingWarehouse(true)} className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center space-x-2 cursor-pointer">
                     <Plus className="w-4 h-4" />
                     <span>New Warehouse</span>
                 </button>
@@ -166,7 +168,7 @@ const WarehousesPage = () => {
                                             <button
                                                 type='button'
                                                 title='Edit User'
-                                                onClick={() => setEditingUser(warehouse)}
+                                                onClick={() => setEditingWarehouse(warehouse)}
                                                 className='p-1.5 text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer'
                                             >
                                                 <Pencil className='w-4 h-4' />
@@ -188,6 +190,12 @@ const WarehousesPage = () => {
                     </table>
                 </div>
             </div>
+            {addingWarehouse && (
+                <CreateWarehouseModal onClose={() => setAddingWarehouse(false)} onWarehouseCreated={fetchUsers} />
+            )}
+            {editingWarehouse && (
+                <EditWarehouseModal warehouse={editingWarehouse} onClose={() => setEditingWarehouse(null)} onWarehouseUpdated={fetchUsers} />
+            )}
         </div>
     )
 }

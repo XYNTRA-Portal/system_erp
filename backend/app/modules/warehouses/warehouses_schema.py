@@ -7,7 +7,6 @@ class WarehouseCreate(BaseModel):
     name: str
     code: str
     address: str
-    is_active: bool
 
 class UpdateWarehouse(BaseModel):
     id: UUID
@@ -17,6 +16,7 @@ class UpdateWarehouse(BaseModel):
     is_active: bool | None = None
 
 class WarehouseResponse(BaseModel):
+    id: UUID
     name: str
     code: str
     address: str
