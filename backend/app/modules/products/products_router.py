@@ -1,16 +1,20 @@
 from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import AsyncSessionLocal
 from core.schemas import ResponseMessage
 from modules.products.products_schema import ProductCreate, ProductResponse, UpdateProduct
 from modules.products.products_service import create_product, get_product_by_id, get_products_by_category, get_products_by_company, update_product, desactivate_product
+from modules.auth.auth_router import get_current_user
 
 router = APIRouter(
     prefix = "/products",
     tags = ["Products"]
 )
+
+security = HTTPBearer()
 
 async def get_db():
     async with AsyncSessionLocal() as db:
@@ -47,10 +51,15 @@ async def desactivate_product(id: UUID, db: AsyncSession = Depends(get_db)):
 async def get_product_by_id(id: UUID, db: AsyncSession = Depends(get_db)):
     return await get_product_by_id(db, id)
 
-@router.get("/by_company", response_model = list[ProductResponse])
-async def get_by_companies(company_id: UUID, db: AsyncSession = Depends(get_db)):
-    return await get_products_by_company(db, company_id)
+@router.get("/by_companies", response_model = list[ProductResponse])
+async def get_by_companies(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)):
+    current_user = await get_current_user(db, credentials.credentials)
 
-@router.get("/by_category", response_model = list[ProductResponse])
+    if not current_user:
+        raise HTTPException( status_code = 401, detail = "Invalid or expired token" )
+    
+    return await get_products_by_company(db, current_user.company_id)
+
+@router.get("/by_categories", response_model = list[ProductResponse])
 async def get_by_categories(category_id: UUID, db: AsyncSession = Depends(get_db)):
     return await get_products_by_category(db, category_id)
